@@ -17,20 +17,29 @@ type KvsStorage interface {
 }
 
 type Kvs struct {
+	connStr string
 	objects map[KvSID]interface{}
 }
 
-func NewKvs() *Kvs {
+func NewKvs(connStr string) *Kvs {
 	return &Kvs{
+		connStr: connStr,
 		objects: map[KvSID]interface{}{},
 	}
 }
 
-func (kvs *Kvs) GetAll() map[KvSID]interface{} {
-	return kvs.objects
+func (kvs *Kvs) GetAll() (map[KvSID]interface{}, error) {
+	if kvs.connStr != "dummy" {
+		return nil, errors.New("network required")
+	}
+	return kvs.objects, nil
 }
 
 func (kvs *Kvs) Get(ctx context.Context, key KvSID) (interface{}, error) {
+	if kvs.connStr != "dummy" {
+		return nil, errors.New("network required")
+	}
+
 	if key == "" {
 		return nil, ErrEmptyID
 	}
@@ -43,6 +52,9 @@ func (kvs *Kvs) Get(ctx context.Context, key KvSID) (interface{}, error) {
 }
 
 func (kvs *Kvs) Save(ctx context.Context, key KvSID, newObject interface{}) error {
+	if kvs.connStr != "dummy" {
+		return errors.New("network required")
+	}
 	if newObject == nil {
 		return ErrEmptyObject
 	}

@@ -52,7 +52,7 @@ func run() error {
 		return err
 	}
 
-	appService := core.NewAppService(heroDAO, armDAO, kvs.NewKvs())
+	appService := core.NewAppService(heroDAO, armDAO, kvs.NewKvs("dummy"))
 	handler := rest.NewHandler(appService)
 	app.Router.Get("/hero/{id}", handler.HandleGetHero)
 	app.Router.Post("/hero", handler.HandleCreateHero)
