@@ -16,43 +16,43 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestArmDAO_Get(t *testing.T) {
-	t.Run("get arm", func(t *testing.T) {
-		armID := 123
-		arm := models.ArmDTO{
-			ID:   armID,
+func TestWeaponDAO_Get(t *testing.T) {
+	t.Run("get weapon", func(t *testing.T) {
+		weaponID := 123
+		weapon := models.WeaponDTO{
+			ID:   weaponID,
 			Name: "knife",
 		}
-		armBytes, _ := json.Marshal(arm)
+		weaponBytes, _ := json.Marshal(weapon)
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path != fmt.Sprintf("/%d", armID) {
+			if r.URL.Path != fmt.Sprintf("/%d", weaponID) {
 				t.Errorf("Expected to request '/123', got: %s", r.URL.Path)
 			}
 			if r.Method != "GET" {
 				t.Errorf("Expected 'GET' method, got: %s", r.Method)
 			}
 			w.WriteHeader(http.StatusOK)
-			w.Write(armBytes)
+			w.Write(weaponBytes)
 		}))
 		defer server.Close()
 
-		s, _ := NewArmDAO(server.Client(), server.URL)
-		resp, err := s.Get(context.Background(), armID)
+		s, _ := NewWeaponDAO(server.Client(), server.URL)
+		resp, err := s.Get(context.Background(), weaponID)
 		assert.NoError(t, err)
-		assert.Equal(t, arm, *resp)
+		assert.Equal(t, weapon, *resp)
 	})
 
-	t.Run("get arm alternative", func(t *testing.T) {
+	t.Run("get weapon alternative", func(t *testing.T) {
 		mockCtrl := gomock.NewController(t)
 		m := mocks.NewMockHttpClient(mockCtrl)
-		armID := 123
-		arm := models.ArmDTO{
-			ID:   armID,
+		weaponID := 123
+		weapon := models.WeaponDTO{
+			ID:   weaponID,
 			Name: "knife",
 		}
 
-		armBytes, _ := json.Marshal(arm)
-		r := ioutil.NopCloser(bytes.NewReader(armBytes))
+		weaponBytes, _ := json.Marshal(weapon)
+		r := ioutil.NopCloser(bytes.NewReader(weaponBytes))
 		m.
 			EXPECT().
 			Do(gomock.Any()).
@@ -63,9 +63,9 @@ func TestArmDAO_Get(t *testing.T) {
 			}, nil).
 			Times(1)
 
-		s, _ := NewArmDAO(m, "http://localhost:8000")
-		resp, err := s.Get(context.Background(), armID)
+		s, _ := NewWeaponDAO(m, "http://localhost:8000")
+		resp, err := s.Get(context.Background(), weaponID)
 		assert.NoError(t, err)
-		assert.Equal(t, arm, *resp)
+		assert.Equal(t, weapon, *resp)
 	})
 }

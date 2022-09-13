@@ -1,14 +1,14 @@
 package models
 
 type HeroDto struct {
-	ID       int     `json:"id"`
-	Name     string  `json:"name"`
-	Lastname string  `json:"last_name"`
-	Age      int     `json:"age"`
-	Level    int     `json:"level"`
-	Type     string  `json:"type"`
-	ArmID    int     `json:"arm_id"`
-	Arm      *ArmDTO `json:"arm,omitempty"`
+	ID       int        `json:"id"`
+	Name     string     `json:"name"`
+	Lastname string     `json:"last_name"`
+	Age      int        `json:"age"`
+	Level    int        `json:"level"`
+	Type     string     `json:"type"`
+	WeaponID int        `json:"weapon_id"`
+	Weapon   *WeaponDTO `json:"weapon,omitempty"`
 }
 
 type CreateHeroDto struct {
@@ -17,5 +17,5 @@ type CreateHeroDto struct {
 	Age      int    `json:"age"`
 	Level    int    `json:"level"`
 	Type     string `json:"type"`
-	ArmID    int    `json:"arm_id"`
+	WeaponID int    `json:"weapon_id"`
 }

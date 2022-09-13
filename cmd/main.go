@@ -45,19 +45,19 @@ func run() error {
 		return err
 	}
 
-	armServer := armMockServer()
-	defer armServer.Close()
-	armDAO, err := dao.NewArmDAO(armServer.Client(), armServer.URL)
+	weaponServer := weaponMockServer()
+	defer weaponServer.Close()
+	weaponDAO, err := dao.NewWeaponDAO(weaponServer.Client(), weaponServer.URL)
 	if err != nil {
 		return err
 	}
 
-	appService := core.NewAppService(heroDAO, armDAO, kvs.NewKvs("dummy"))
+	appService := core.NewAppService(heroDAO, weaponDAO, kvs.NewKvs("dummy"))
 	handler := rest.NewHandler(appService)
 	app.Router.Get("/hero/{id}", handler.HandleGetHero)
 	app.Router.Post("/hero", handler.HandleCreateHero)
-	app.Router.Get("/arm/{id}", handler.HandleGetArm)
-	app.Router.Post("/arm", handler.HandleCreateArm)
+	app.Router.Get("/weapon/{id}", handler.HandleGetWeapon)
+	app.Router.Post("/weapon", handler.HandleCreateWeapon)
 	app.Router.Get("/stats", handler.HandleStats)
 
 	return app.Run()
@@ -72,7 +72,7 @@ func heroMockServer() *httptest.Server {
 		Age:      100,
 		Level:    10,
 		Type:     "human",
-		ArmID:    111,
+		WeaponID: 111,
 	}
 	HeroBytes, _ := json.Marshal(hero)
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -81,15 +81,15 @@ func heroMockServer() *httptest.Server {
 	}))
 }
 
-func armMockServer() *httptest.Server {
-	armID := 111
-	arm := models.ArmDTO{
-		ID:   armID,
+func weaponMockServer() *httptest.Server {
+	weaponID := 111
+	weapon := models.WeaponDTO{
+		ID:   weaponID,
 		Name: "knife",
 	}
-	armBytes, _ := json.Marshal(arm)
+	weaponBytes, _ := json.Marshal(weapon)
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write(armBytes)
+		w.Write(weaponBytes)
 	}))
 }

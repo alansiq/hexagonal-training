@@ -10,16 +10,16 @@ import (
 )
 
 type AppService struct {
-	heroDAO *dao.HeroDAO
-	armDAO  *dao.ArmDAO
-	stats   *kvs.Kvs
+	heroDAO   *dao.HeroDAO
+	weaponDAO *dao.WeaponDAO
+	stats     *kvs.Kvs
 }
 
-func NewAppService(heroDAO *dao.HeroDAO, armDAO *dao.ArmDAO, stats *kvs.Kvs) *AppService {
+func NewAppService(heroDAO *dao.HeroDAO, weaponDAO *dao.WeaponDAO, stats *kvs.Kvs) *AppService {
 	return &AppService{
-		heroDAO: heroDAO,
-		armDAO:  armDAO,
-		stats:   stats,
+		heroDAO:   heroDAO,
+		weaponDAO: weaponDAO,
+		stats:     stats,
 	}
 }
 
@@ -60,12 +60,12 @@ func (a *AppService) CreateHero(ctx context.Context, newHero *models.CreateHeroD
 	return nil
 }
 
-func (a *AppService) CreateArm(ctx context.Context, newArm *models.CreateArmDTO) error {
-	return a.armDAO.Create(ctx, newArm)
+func (a *AppService) CreateWeapon(ctx context.Context, newWeapon *models.CreateWeaponDTO) error {
+	return a.weaponDAO.Create(ctx, newWeapon)
 }
 
-func (a *AppService) GetArm(ctx context.Context, armID int) (*models.ArmDTO, error) {
-	return a.armDAO.Get(ctx, armID)
+func (a *AppService) GetWeapon(ctx context.Context, weaponID int) (*models.WeaponDTO, error) {
+	return a.weaponDAO.Get(ctx, weaponID)
 }
 
 func (a *AppService) Stats(ctx context.Context) (*models.Stats, error) {

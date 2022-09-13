@@ -37,12 +37,12 @@ func (h *handler) HandleGetHero(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	arm, err := h.appService.GetArm(r.Context(), hero.ArmID)
+	weapon, err := h.appService.GetWeapon(r.Context(), hero.WeaponID)
 	if err != nil {
 		return err
 	}
 
-	hero.Arm = arm
+	hero.Weapon = weapon
 
 	return web.EncodeJSON(w, hero, http.StatusOK)
 }
@@ -53,13 +53,13 @@ func (h *handler) HandleCreateHero(w http.ResponseWriter, r *http.Request) error
 		return err
 	}
 
-	arm, err := h.appService.GetArm(r.Context(), payload.ArmID)
+	weapon, err := h.appService.GetWeapon(r.Context(), payload.WeaponID)
 	if err != nil {
 		return err
 	}
 
-	if arm == nil {
-		return errors.New("arm doesnt exists")
+	if weapon == nil {
+		return errors.New("weapon doesnt exists")
 	}
 
 	err = h.appService.CreateHero(r.Context(), payload)
@@ -70,37 +70,37 @@ func (h *handler) HandleCreateHero(w http.ResponseWriter, r *http.Request) error
 	return web.EncodeJSON(w, "hero crated", http.StatusOK)
 }
 
-func (h *handler) HandleCreateArm(w http.ResponseWriter, r *http.Request) error {
-	payload := &models.CreateArmDTO{}
+func (h *handler) HandleCreateWeapon(w http.ResponseWriter, r *http.Request) error {
+	payload := &models.CreateWeaponDTO{}
 	if err := web.DecodeJSON(r, payload); err != nil {
 		return err
 	}
 
-	err := h.appService.CreateArm(r.Context(), payload)
+	err := h.appService.CreateWeapon(r.Context(), payload)
 	if err != nil {
 		return err
 	}
 
-	return web.EncodeJSON(w, "arm crated", http.StatusOK)
+	return web.EncodeJSON(w, "weapon crated", http.StatusOK)
 }
 
-func (h *handler) HandleGetArm(w http.ResponseWriter, r *http.Request) error {
-	armID := chi.URLParam(r, "id")
-	if armID == "" {
-		return errors.New("arm id required")
+func (h *handler) HandleGetWeapon(w http.ResponseWriter, r *http.Request) error {
+	weaponID := chi.URLParam(r, "id")
+	if weaponID == "" {
+		return errors.New("weapon id required")
 	}
 
-	armInt, err := strconv.Atoi(armID)
+	weaponInt, err := strconv.Atoi(weaponID)
 	if err != nil {
 		return err
 	}
 
-	arm, err := h.appService.GetArm(r.Context(), armInt)
+	weapon, err := h.appService.GetWeapon(r.Context(), weaponInt)
 	if err != nil {
 		return err
 	}
 
-	return web.EncodeJSON(w, arm, http.StatusOK)
+	return web.EncodeJSON(w, weapon, http.StatusOK)
 }
 
 func (h *handler) HandleStats(w http.ResponseWriter, r *http.Request) error {

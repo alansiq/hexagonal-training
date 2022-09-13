@@ -17,9 +17,9 @@ import (
 func Test_handler_HandleGetHero(t *testing.T) {
 
 	t.Run("get hero", func(t *testing.T) {
-		armID := 456
-		expectedArm := models.ArmDTO{
-			ID:   armID,
+		weaponID := 456
+		expectedWeapon := models.WeaponDTO{
+			ID:   weaponID,
 			Name: "knife",
 		}
 		heroID := 123
@@ -30,8 +30,8 @@ func Test_handler_HandleGetHero(t *testing.T) {
 			Age:      100,
 			Level:    10,
 			Type:     "human",
-			ArmID:    armID,
-			Arm:      &expectedArm,
+			WeaponID: weaponID,
+			Weapon:   &expectedWeapon,
 		}
 
 		HeroBytes, _ := json.Marshal(expectedHero)
@@ -47,23 +47,23 @@ func Test_handler_HandleGetHero(t *testing.T) {
 		}))
 		defer heroServer.Close()
 
-		armBytes, _ := json.Marshal(expectedArm)
-		armServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path != fmt.Sprintf("/%d", armID) {
+		weaponBytes, _ := json.Marshal(expectedWeapon)
+		weaponServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path != fmt.Sprintf("/%d", weaponID) {
 				t.Errorf("Expected to request '/456', got: %s", r.URL.Path)
 			}
 			if r.Method != "GET" {
 				t.Errorf("Expected 'GET' method, got: %s", r.Method)
 			}
 			w.WriteHeader(http.StatusOK)
-			w.Write(armBytes)
+			w.Write(weaponBytes)
 		}))
-		defer armServer.Close()
+		defer weaponServer.Close()
 
-		armDAO, _ := dao.NewArmDAO(armServer.Client(), armServer.URL)
+		weaponDAO, _ := dao.NewWeaponDAO(weaponServer.Client(), weaponServer.URL)
 
 		heroDAO, _ := dao.NewHeroDAO(heroServer.Client(), heroServer.URL)
-		srv := core.NewAppService(heroDAO, armDAO, nil)
+		srv := core.NewAppService(heroDAO, weaponDAO, nil)
 
 		//handler := NewHandler(srv)
 

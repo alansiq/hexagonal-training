@@ -22,7 +22,7 @@ func TestHeroDAO_GetHero(t *testing.T) {
 			Age:      100,
 			Level:    10,
 			Type:     "human",
-			ArmID:    1,
+			WeaponID: 1,
 		}
 		HeroBytes, _ := json.Marshal(hero)
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

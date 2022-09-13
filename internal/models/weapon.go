@@ -1,10 +1,10 @@
 package models
 
-type CreateArmDTO struct {
+type CreateWeaponDTO struct {
 	Name string `json:"name"`
 }
 
-type ArmDTO struct {
+type WeaponDTO struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
