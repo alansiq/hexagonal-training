@@ -1,4 +1,4 @@
-package dao
+package rest
 
 import (
 	"context"
@@ -8,14 +8,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mercadolibre/fury_cx-example/internal/models"
+	"github.com/mercadolibre/fury_cx-example/internal/domain"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestHeroDAO_GetHero(t *testing.T) {
 	t.Run("get hero", func(t *testing.T) {
 		heroID := 123
-		hero := models.HeroDto{
+		hero := domain.HeroDto{
 			ID:       123,
 			Name:     "clark",
 			Lastname: "kent",
@@ -37,8 +37,8 @@ func TestHeroDAO_GetHero(t *testing.T) {
 		}))
 		defer server.Close()
 
-		s, _ := NewHeroDAO(server.Client(), server.URL)
-		resp, err := s.GetHero(context.Background(), heroID)
+		s, _ := NewHeroClient(server.Client(), server.URL)
+		resp, err := s.Get(context.Background(), heroID)
 		assert.NoError(t, err)
 		assert.Equal(t, hero, *resp)
 	})

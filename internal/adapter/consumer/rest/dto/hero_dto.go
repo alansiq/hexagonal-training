@@ -1,4 +1,4 @@
-package models
+package dto
 
 type HeroDto struct {
 	ID       int        `json:"id"`

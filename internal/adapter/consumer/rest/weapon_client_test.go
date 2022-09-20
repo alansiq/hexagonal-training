@@ -1,4 +1,4 @@
-package dao
+package rest
 
 import (
 	"bytes"
@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/mercadolibre/fury_cx-example/internal/models"
+	"github.com/mercadolibre/fury_cx-example/internal/domain"
 	"github.com/mercadolibre/fury_cx-example/test/bugs/mocks"
 	"github.com/stretchr/testify/assert"
 )
@@ -19,7 +19,7 @@ import (
 func TestWeaponDAO_Get(t *testing.T) {
 	t.Run("get weapon", func(t *testing.T) {
 		weaponID := 123
-		weapon := models.WeaponDTO{
+		weapon := domain.WeaponDTO{
 			ID:   weaponID,
 			Name: "knife",
 		}
@@ -46,7 +46,7 @@ func TestWeaponDAO_Get(t *testing.T) {
 		mockCtrl := gomock.NewController(t)
 		m := mocks.NewMockHttpClient(mockCtrl)
 		weaponID := 123
-		weapon := models.WeaponDTO{
+		weapon := domain.WeaponDTO{
 			ID:   weaponID,
 			Name: "knife",
 		}

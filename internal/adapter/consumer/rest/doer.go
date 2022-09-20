@@ -1,4 +1,4 @@
-package dao
+package rest
 
 import (
 	"net/http"

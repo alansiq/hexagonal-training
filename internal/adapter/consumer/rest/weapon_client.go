@@ -1,4 +1,4 @@
-package dao
+package rest
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/mercadolibre/fury_cx-example/internal/models"
+	"github.com/mercadolibre/fury_cx-example/internal/domain"
 	"github.com/mercadolibre/fury_go-core/pkg/rusty"
 )
 
@@ -33,7 +33,7 @@ func NewWeaponDAO(client HttpClient, uri string) (*WeaponDAO, error) {
 	}, nil
 }
 
-func (cr *WeaponDAO) Get(ctx context.Context, weaponID int) (*models.WeaponDTO, error) {
+func (cr *WeaponDAO) Get(ctx context.Context, weaponID int) (*domain.WeaponDTO, error) {
 	resp, err := cr.getWeaponEndpoint.Get(ctx, rusty.WithParam("id", weaponID))
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
@@ -43,7 +43,7 @@ func (cr *WeaponDAO) Get(ctx context.Context, weaponID int) (*models.WeaponDTO, 
 		return nil, err
 	}
 
-	body := &models.WeaponDTO{}
+	body := &domain.WeaponDTO{}
 	if err := json.Unmarshal(resp.Body, body); err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (cr *WeaponDAO) Get(ctx context.Context, weaponID int) (*models.WeaponDTO, 
 	return body, nil
 }
 
-func (cr *WeaponDAO) Create(ctx context.Context, newHero *models.CreateWeaponDTO) error {
+func (cr *WeaponDAO) Create(ctx context.Context, newHero *domain.CreateWeaponDTO) error {
 	body, err := json.Marshal(newHero)
 	if err != nil {
 		return errors.New("error in new weapon marshal")

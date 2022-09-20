@@ -1,23 +1,24 @@
-package dao
+package rest
 
 import (
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/mercadolibre/fury_cx-example/internal/adapter/consumer/rest/dto"
 	"net/http"
 
-	"github.com/mercadolibre/fury_cx-example/internal/models"
+	"github.com/mercadolibre/fury_cx-example/internal/domain"
 	"github.com/mercadolibre/fury_go-core/pkg/rusty"
 )
 
-type HeroDAO struct {
+type HeroClient struct {
 	getHeroEndpoint      *rusty.Endpoint
 	getAllHeroesEndpoint *rusty.Endpoint
 	createHeroEndpoint   *rusty.Endpoint
 }
 
-func NewHeroDAO(client HttpClient, uri string) (*HeroDAO, error) {
+func NewHeroClient(client HttpClient, uri string) (*HeroClient, error) {
 	getHeroEndpoint, err := rusty.NewEndpoint(client, rusty.URL(uri, "/{id}"), rusty.WithHeader("X-Admin-Id", "APP_CORE"))
 	if err != nil {
 		return nil, fmt.Errorf("error creating get hero endpoint, %w", err)
@@ -33,14 +34,14 @@ func NewHeroDAO(client HttpClient, uri string) (*HeroDAO, error) {
 		return nil, fmt.Errorf("error creating create hero endpoint, %w", err)
 	}
 
-	return &HeroDAO{
+	return &HeroClient{
 		getHeroEndpoint:      getHeroEndpoint,
 		getAllHeroesEndpoint: getAllHeroesEndpoint,
 		createHeroEndpoint:   createHeroEndpoint,
 	}, nil
 }
 
-func (cr *HeroDAO) GetHero(ctx context.Context, heroID int) (*models.HeroDto, error) {
+func (cr *HeroClient) Get(ctx context.Context, heroID int) (*domain.Hero, error) {
 	resp, err := cr.getHeroEndpoint.Get(ctx, rusty.WithParam("id", heroID))
 	if err != nil {
 		if resp != nil && resp.StatusCode == http.StatusNotFound {
@@ -50,15 +51,16 @@ func (cr *HeroDAO) GetHero(ctx context.Context, heroID int) (*models.HeroDto, er
 		return nil, err
 	}
 
-	body := &models.HeroDto{}
+	body := &dto.HeroDto{}
 	if err := json.Unmarshal(resp.Body, body); err != nil {
 		return nil, err
 	}
 
-	return body, nil
+	heroResponse := dto.DtoToHero(body)
+	return heroResponse, nil
 }
 
-func (cr *HeroDAO) CreateHero(ctx context.Context, newHero *models.CreateHeroDto) error {
+func (cr *HeroClient) Create(ctx context.Context, newHero *domain.Hero) error {
 	body, err := json.Marshal(newHero)
 	if err != nil {
 		return errors.New("error in new hero marshal")
@@ -72,13 +74,13 @@ func (cr *HeroDAO) CreateHero(ctx context.Context, newHero *models.CreateHeroDto
 	return nil
 }
 
-func (cr *HeroDAO) GetHeroes(ctx context.Context) ([]models.HeroDto, error) {
+func (cr *HeroClient) ListAll(ctx context.Context) ([]domain.Hero, error) {
 	resp, err := cr.getAllHeroesEndpoint.Get(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	var body []models.HeroDto
+	var body []domain.HeroDto
 	if err := json.Unmarshal(resp.Body, &body); err != nil {
 		return nil, err
 	}

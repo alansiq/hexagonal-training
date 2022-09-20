@@ -3,13 +3,13 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
+	rest2 "github.com/mercadolibre/fury_cx-example/internal/adapter/consumer/rest"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mercadolibre/fury_cx-example/internal/core"
-	"github.com/mercadolibre/fury_cx-example/internal/dao"
-	"github.com/mercadolibre/fury_cx-example/internal/models"
+	"github.com/mercadolibre/fury_cx-example/internal/application"
+	"github.com/mercadolibre/fury_cx-example/internal/domain"
 	"github.com/mercadolibre/fury_go-core/pkg/web"
 	"github.com/stretchr/testify/assert"
 )
@@ -18,12 +18,12 @@ func Test_handler_HandleGetHero(t *testing.T) {
 
 	t.Run("get hero", func(t *testing.T) {
 		weaponID := 456
-		expectedWeapon := models.WeaponDTO{
+		expectedWeapon := domain.WeaponDTO{
 			ID:   weaponID,
 			Name: "knife",
 		}
 		heroID := 123
-		expectedHero := models.HeroDto{
+		expectedHero := domain.HeroDto{
 			ID:       123,
 			Name:     "clark",
 			Lastname: "kent",
@@ -60,10 +60,10 @@ func Test_handler_HandleGetHero(t *testing.T) {
 		}))
 		defer weaponServer.Close()
 
-		weaponDAO, _ := dao.NewWeaponDAO(weaponServer.Client(), weaponServer.URL)
+		weaponDAO, _ := rest2.NewWeaponDAO(weaponServer.Client(), weaponServer.URL)
 
-		heroDAO, _ := dao.NewHeroDAO(heroServer.Client(), heroServer.URL)
-		srv := core.NewAppService(heroDAO, weaponDAO, nil)
+		heroDAO, _ := rest2.NewHeroClient(heroServer.Client(), heroServer.URL)
+		srv := application.NewAppService(heroDAO, weaponDAO, nil)
 
 		//handler := NewHandler(srv)
 
@@ -76,7 +76,7 @@ func Test_handler_HandleGetHero(t *testing.T) {
 
 		assert.NotNil(t, resp.Result())
 		assert.Equal(t, http.StatusOK, resp.Result().StatusCode)
-		heroResult := models.HeroDto{}
+		heroResult := domain.HeroDto{}
 		json.Unmarshal(resp.Body.Bytes(), &heroResult)
 		assert.Equal(t, expectedHero, heroResult)
 	})

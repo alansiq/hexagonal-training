@@ -1,4 +1,4 @@
-package models
+package dto
 
 type CreateWeaponDTO struct {
 	Name string `json:"name"`

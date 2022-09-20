@@ -1,15 +1,15 @@
-package core
+package application
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/mercadolibre/fury_cx-example/internal/adapter/consumer/rest"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mercadolibre/fury_cx-example/internal/dao"
-	"github.com/mercadolibre/fury_cx-example/internal/models"
+	"github.com/mercadolibre/fury_cx-example/internal/domain"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,7 +17,7 @@ func TestAppService_GetHero(t *testing.T) {
 
 	t.Run("get hero", func(t *testing.T) {
 		heroID := 123
-		hero := models.HeroDto{
+		hero := domain.HeroDto{
 			ID:       123,
 			Name:     "clark",
 			Lastname: "kent",
@@ -39,7 +39,7 @@ func TestAppService_GetHero(t *testing.T) {
 		}))
 		defer server.Close()
 
-		heroDAO, _ := dao.NewHeroDAO(server.Client(), server.URL)
+		heroDAO, _ := rest.NewHeroClient(server.Client(), server.URL)
 		srv := NewAppService(heroDAO, nil, nil)
 		resp, err := srv.GetHero(context.Background(), heroID)
 		assert.NoError(t, err)

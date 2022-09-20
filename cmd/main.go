@@ -3,15 +3,15 @@ package main
 import (
 	"context"
 	"encoding/json"
+	rest3 "github.com/mercadolibre/fury_cx-example/internal/adapter/consumer/rest"
+	"github.com/mercadolibre/fury_cx-example/internal/adapter/producer/rest"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
 
-	"github.com/mercadolibre/fury_cx-example/internal/core"
-	"github.com/mercadolibre/fury_cx-example/internal/dao"
-	"github.com/mercadolibre/fury_cx-example/internal/models"
-	"github.com/mercadolibre/fury_cx-example/internal/rest"
+	"github.com/mercadolibre/fury_cx-example/internal/application"
+	"github.com/mercadolibre/fury_cx-example/internal/domain"
 	"github.com/mercadolibre/fury_cx-example/pkg/kvs"
 	"github.com/mercadolibre/fury_go-platform/pkg/fury"
 	"github.com/mercadolibre/fury_go-toolkit-otel/pkg/otel"
@@ -40,19 +40,19 @@ func run() error {
 
 	heroServer := heroMockServer()
 	defer heroServer.Close()
-	heroDAO, err := dao.NewHeroDAO(heroServer.Client(), heroServer.URL)
+	heroDAO, err := rest3.NewHeroClient(heroServer.Client(), heroServer.URL)
 	if err != nil {
 		return err
 	}
 
 	weaponServer := weaponMockServer()
 	defer weaponServer.Close()
-	weaponDAO, err := dao.NewWeaponDAO(weaponServer.Client(), weaponServer.URL)
+	weaponDAO, err := rest3.NewWeaponDAO(weaponServer.Client(), weaponServer.URL)
 	if err != nil {
 		return err
 	}
 
-	appService := core.NewAppService(heroDAO, weaponDAO, kvs.NewKvs("dummy"))
+	appService := application.NewAppService(heroDAO, weaponDAO, kvs.NewKvs("dummy"))
 	handler := rest.NewHandler(appService)
 	app.Router.Get("/hero/{id}", handler.HandleGetHero)
 	app.Router.Post("/hero", handler.HandleCreateHero)
@@ -65,7 +65,7 @@ func run() error {
 
 func heroMockServer() *httptest.Server {
 	heroID := 123
-	hero := models.HeroDto{
+	hero := domain.HeroDto{
 		ID:       heroID,
 		Name:     "clark",
 		Lastname: "kent",
@@ -83,7 +83,7 @@ func heroMockServer() *httptest.Server {
 
 func weaponMockServer() *httptest.Server {
 	weaponID := 111
-	weapon := models.WeaponDTO{
+	weapon := domain.WeaponDTO{
 		ID:   weaponID,
 		Name: "knife",
 	}
